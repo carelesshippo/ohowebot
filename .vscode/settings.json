@@ -1,0 +1,11 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "discord",
+            "database": "${workspaceFolder:ohowebot}/database.sqlite3"
+        }
+    ],
+    "sqltools.useNodeRuntime": true
+}

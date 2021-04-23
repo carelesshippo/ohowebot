@@ -1,31 +1,40 @@
-import { CommandoClient, SQLiteProvider } from "discord.js-commando";
-var { token, prefix, supportServerInvite } = require("../config.json");
+import { Client, CommandoClient, SQLiteProvider } from "discord.js-commando";
+let { token, prefix, supportServerInvite } = require("../config.json");
 import path from "path";
-import sqlite from 'sqlite';
+import sqlite from "sqlite";
+import sqlite3 from "sqlite3";
 
-var bot: CommandoClient = new CommandoClient({
+let database = null;
+let bot: CommandoClient = new CommandoClient({
+    owner: ["408450843726053379"],
     commandPrefix: prefix,
     commandEditableDuration: 10,
     nonCommandEditable: true,
-    invite: supportServerInvite
+    invite: supportServerInvite,
 });
 
 bot.registry
     .registerGroups([
-        ["bot", "Meta"]
+        ["moderation", "Moderation"],
+        ["ticket", "Tickets"],
+        ["config", "Config"],
+        ["other", "Other"],
     ])
     .registerDefaults()
-    .registerCommandsIn(path.join(__dirname, 'commands'))
-    .registerTypesIn(path.join(__dirname, 'types'));
+    .registerCommandsIn(path.join(__dirname, "commands"))
+    .registerTypesIn(path.join(__dirname, "types"));
 
-sqlite.open(path.join(__dirname, 'database.sqlite3')).then(database => {
-    bot.setProvider(new SQLiteProvider(database));
-}).catch((e) => {
-    console.error(`Failed to connect to database: ${e}`)
-})
+sqlite
+    .open({ filename: "database.sqlite3", driver: sqlite3.Database })
+    .then((db) => {
+        database = db;
+        bot.setProvider(new SQLiteProvider(database)).catch(console.error);
+    });
 
 bot.on("ready", async () => {
     console.log(`${bot.user.username} is online!`);
-})
+});
 
 bot.login(token).catch(console.log);
+
+export { database };

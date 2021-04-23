@@ -1,3 +1,5 @@
 dist/
 node_modules/
 config.json
+*.sqlite3
+.vscode/
