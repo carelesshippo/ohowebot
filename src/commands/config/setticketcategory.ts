@@ -31,6 +31,6 @@ module.exports = class SetTicketCategory extends Command {
         let category: CategoryChannel = args["category"];
 
         let set_ticket_category_id = await this.client.provider.set(msg.guild, "ticket_category_id", category.id);
-        return msg.channel.send("The ticket category has been set to <#$" + set_ticket_category_id + ">");
+        return msg.channel.send("The ticket category has been set to " + category.name);
     }
 };
