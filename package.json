@@ -1,10 +1,10 @@
 {
-  "name": "ts-discord-bot-template",
+  "name": "ohowebot",
   "version": "1.0.0",
   "description": "A Discord bot template using discord.js, discord.js-commando, and TypeScript. Supports auto-compilation.",
   "main": "dist/index.js",
   "scripts": {
-    "clean": "rmdir /s /q dist",
+    "clean": "rm -rf dist",
     "debug": "nodemon -e js,ts --watch src --exec \"npm run clean && npm run build:ts && npm run start:app\"",
     "build:ts": "tsc",
     "start:app": "node dist/index.js"
