@@ -9,7 +9,7 @@ ssh -i $SSH_KEY_PATH $SERVER 'bash -i'  <<-'ENDSSH'
     rm -rf node_modules
     npm install
     npm run clean
-    npm run build
+    npm run build:ts
     pm2 start ohowebot
     pm2 save
     exit
