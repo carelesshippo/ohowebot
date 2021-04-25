@@ -36,7 +36,6 @@ export default async (
                             .member(user)
                             .roles.cache.has(reactionRole.roleId)
                     ) {
-                        console.log("has the role");
                         reaction.message.guild.member(user).roles.remove(role);
                     } else {
                         reaction.message.guild

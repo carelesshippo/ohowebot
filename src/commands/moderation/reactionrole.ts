@@ -51,7 +51,6 @@ module.exports = class BanCommand extends Command {
             reactionRoles = await this.client.provider.set(msg.guild, "reaction_roles", []);
         }
         
-        console.log(message);
         let sentMessage = await msg.channel.send(message);
         sentMessage.react(emoji);
 
