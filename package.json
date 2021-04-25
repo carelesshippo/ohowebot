@@ -5,8 +5,9 @@
   "main": "dist/index.js",
   "scripts": {
     "clean": "rm -rf dist",
-    "debug": "nodemon -e js,ts --watch src --exec \"npm run clean && npm run build:ts && npm run start:app\"",
+    "debug": "nodemon -e js,ts --watch src --exec \"npm run buildandstart\"",
     "build:ts": "tsc",
+    "buildandstart": "npm run clean && npm run build:ts && npm run start:app",
     "start:app": "node dist/index.js"
   },
   "author": "abyssal512",
