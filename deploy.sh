@@ -1,8 +1,7 @@
-SSH_KEY_PATH="login.pub"
 SERVER="discord@10.0.0.90"
 
 echo "Deploying"
-ssh -i $SSH_KEY_PATH $SERVER 'bash -i'  <<-'ENDSSH'
+ssh $SERVER 'bash -i'  <<-'ENDSSH'
     cd ohowebot
     git pull
     pm2 stop ohowebot

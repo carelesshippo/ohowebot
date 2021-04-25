@@ -1,10 +1,11 @@
-import { Message } from "discord.js";
+import { Message, MessageReaction, User } from "discord.js";
 import { Client, CommandoClient, SQLiteProvider } from "discord.js-commando";
 let { token, prefix, supportServerInvite } = require("../config.json");
 import path from "path";
 import { open } from "sqlite";
 import sqlite3 from "sqlite3";
 import messagedeletelogger from "./events/messagedeletelogger";
+import reactadd from "./events/reactadd";
 
 let database = null;
 let bot: CommandoClient = new CommandoClient({
@@ -36,6 +37,10 @@ bot.on("ready", async () => {
 
 bot.on("messageDelete", (message: Message) => {
     messagedeletelogger(bot, message);
+})
+
+bot.on("messageReactionAdd", (reaction: MessageReaction, user: User) => {
+    reactadd(bot, reaction, user);
 })
 
 bot.login(token).catch(console.log);
