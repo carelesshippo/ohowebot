@@ -2,6 +2,7 @@ import { timeEnd } from "console";
 import { MessageEmbed, Role } from "discord.js";
 import { CommandoClient, Command, CommandoMessage } from "discord.js-commando";
 import ITicket from "../../ITicket";
+import Ticket from "../../models/Ticket";
 
 module.exports = class NewTicketRole extends Command {
     constructor(bot: CommandoClient) {
@@ -12,7 +13,7 @@ module.exports = class NewTicketRole extends Command {
             memberName: "closeticket",
             description: "close's ticket",
             guildOnly: true,
-            examples: ["prefix close"]
+            examples: ["prefix close"],
         });
     }
 
@@ -33,31 +34,18 @@ module.exports = class NewTicketRole extends Command {
             }
             return msg.channel.send("Tickets are not enabled on this server.");
         }
-        let tickets: Array<ITicket> = this.client.provider.get(
-            msg.guild,
-            "tickets",
-            null
-        );
-        if (tickets == null) {
-            tickets = await this.client.provider.set(msg.guild, "tickets", []);
-        }
 
-        let actualTicket: ITicket = null;
-        tickets.forEach(ticket => {
-            if (ticket.channelId == msg.channel.id) {
-                actualTicket = ticket;
-                return;
-            }
+        let actualTicket = await Ticket.findOne({
+            where: {
+                channelid: msg.channel.id,
+            },
         });
-
         if (actualTicket == null) {
             return msg.channel.send("This is not a ticket channel");
         }
 
         actualTicket.resolved = true;
-
-        tickets[actualTicket.id] = actualTicket;
-        this.client.provider.set(msg.guild, "tickets", tickets);
+        actualTicket.save();
 
         msg.channel.delete("Ticket resolved");
         return null;

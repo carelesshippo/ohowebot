@@ -1,8 +1,8 @@
-import { GuildEmoji, GuildMember, Message, Role } from "discord.js";
+import { Emoji, GuildEmoji, GuildMember, Message, Role } from "discord.js";
 import { CommandoClient, Command, CommandoMessage } from "discord.js-commando";
-import IReactionRole from "../../IReactionRole";
+import ReactionRole from "../../models/ReactionRole";
 
-module.exports = class BanCommand extends Command {
+module.exports = class ReactionRoleCommannd extends Command {
     constructor(bot: CommandoClient) {
         super(bot, {
             name: "reactionrole",
@@ -27,42 +27,32 @@ module.exports = class BanCommand extends Command {
                     key: "message",
                     label: "message",
                     prompt: "What is the message",
-                    type: "string",
+                    type: "message",
                 },
             ],
             guildOnly: true,
-            examples: ["prefix reactionrole @Role Message"],
+            examples: ["prefix reactionrole @Role messagelinkorid"],
             userPermissions: ["MANAGE_MESSAGES"],
         });
     }
 
     async run(msg: CommandoMessage, args) {
         let role: Role = args["role"];
-        let emoji: GuildEmoji = args["emoji"];
-        let message: string = args["message"];
-        
+        let emoji = args["emoji"];
+        let message: Message = args["message"];
 
-        let reactionRoles: Array<IReactionRole> = this.client.provider.get(
-            msg.guild,
-            "reaction_roles",
-            null
+        console.log(emoji)
+
+        ReactionRole.create({
+            emojiid: emoji.id,
+            roleid: role.id,
+            messageid: message.id,
+        });
+
+        message.react(emoji);
+
+        return msg.channel.send(
+            "Created reaction role on message " + message.id
         );
-        if (reactionRoles == null) {
-            reactionRoles = await this.client.provider.set(msg.guild, "reaction_roles", []);
-        }
-        
-        let sentMessage = await msg.channel.send(message);
-        sentMessage.react(emoji);
-
-        let newReactionRole: IReactionRole = {
-            emojiId: emoji.id,
-            roleId: role.id,
-            messageId: sentMessage.id
-        }
-        reactionRoles.push(newReactionRole);
-
-        this.client.provider.set(msg.guild, "reaction_roles", reactionRoles);
-
-        return msg.channel.send("Delete this message and the sent command. Or don't. Its your choice")
     }
 };

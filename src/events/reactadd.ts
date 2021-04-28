@@ -1,12 +1,6 @@
-import {
-    Message,
-    MessageEmbed,
-    MessageReaction,
-    TextChannel,
-    User,
-} from "discord.js";
+import { MessageReaction, Role, User } from "discord.js";
 import { CommandoClient } from "discord.js-commando";
-import IReactionRole from "../IReactionRole";
+import ReactionRole from "../models/ReactionRole";
 
 export default async (
     client: CommandoClient,
@@ -16,39 +10,44 @@ export default async (
     if (user.id == client.user.id) {
         return;
     }
-    let reactionRoles: Array<IReactionRole> = client.provider.get(
-        reaction.message.guild,
-        "reaction_roles",
-        []
+    let member = reaction.message.guild.member(user);
+    let messageid = reaction.message.id;
+    let emojiid = reaction.emoji.id;
+
+    let matchingReactionRoles: Array<ReactionRole> = await ReactionRole.findAll(
+        {
+            where: {
+                messageid: messageid,
+                emojiid: emojiid,
+            },
+        }
     );
 
-    reactionRoles.forEach((reactionRole) => {
-        if (reactionRole.messageId == reaction.message.id) {
-            if (reactionRole.emojiId == reaction.emoji.id) {
-                reaction.users.remove(user);
-                let role = reaction.message.guild.roles.cache.get(
-                    reactionRole.roleId
-                );
+    if (matchingReactionRoles.length > 0) {
+        matchingReactionRoles.forEach(async (reactionRole) => {
+            let role: Role = reaction.message.guild.roles.cache.get(
+                reactionRole.roleid
+            );
 
-                if (role != undefined) {
-                    if (
-                        reaction.message.guild
-                            .member(user)
-                            .roles.cache.has(reactionRole.roleId)
-                    ) {
-                        reaction.message.guild.member(user).roles.remove(role);
-                    } else {
-                        reaction.message.guild
-                            .member(user)
-                            .roles.add(
-                                reaction.message.guild.roles.cache.get(
-                                    reactionRole.roleId
-                                )
-                            );
+            if (role != undefined) {
+                if (!member.roles.cache.has(reactionRole.roleid)) {
+                    try {
+                        await member.roles.add(
+                            role,
+                            "Reaction role for message " + messageid
+                        );
+                    } catch (error) {
+                        let dmChannel = await member.createDM();
+                        dmChannel.send(
+                            "Failed to add the role `" +
+                                role.name +
+                                "` in the `" +
+                                role.guild.name +
+                                "` server. This could be due to you being the owner or having other permissions."
+                        );
                     }
                 }
-                return;
             }
-        }
-    });
+        });
+    }
 };

@@ -1,8 +1,7 @@
-import { GuildEmoji, GuildMember, Message, Role } from "discord.js";
 import { CommandoClient, Command, CommandoMessage } from "discord.js-commando";
-import IReactionRole from "../../IReactionRole";
+import ReactionRole from "../../models/ReactionRole";
 
-module.exports = class BanCommand extends Command {
+module.exports = class ReactionRoleRemove extends Command {
     constructor(bot: CommandoClient) {
         super(bot, {
             name: "reactionroleremove",
@@ -12,41 +11,26 @@ module.exports = class BanCommand extends Command {
             description: "removes a reaction role from the database",
             args: [
                 {
-                    key: "message",
-                    label: "message",
-                    prompt: "What is the message of the role?",
-                    type: "message",
+                    key: "id",
+                    label: "id",
+                    prompt: "What is the id of the reaction role (see reationrolelist)?",
+                    type: "integer",
                 }
             ],
             guildOnly: true,
-            examples: ["prefix reactionroleremove message"],
+            examples: ["prefix reactionroleremove id"],
             userPermissions: ["MANAGE_MESSAGES"],
         });
     }
 
     async run(msg: CommandoMessage, args) {
-        let message: Message = args["message"];
+        let id = args["id"];
 
-        let reactionRoles: Array<IReactionRole> = this.client.provider.get(
-            msg.guild,
-            "reaction_roles",
-            null
-        );
-        if (reactionRoles == null) {
-            reactionRoles = await this.client.provider.set(msg.guild, "reaction_roles", []);
+        let reactionRole = await ReactionRole.findByPk(id);
+        if (reactionRole) {
+            reactionRole.destroy();
+            return msg.channel.send("Removed reaction role with id " + id);
         }
-        let isRemoved = false;
-        for (let i = reactionRoles.length - 1; i >= 0; i--) {
-            const reactionRole = reactionRoles[i];
-            if (reactionRole.messageId == message.id) {
-                reactionRoles.splice(i, 1);
-                isRemoved = true;
-                break;
-            }
-        }
-
-        this.client.provider.set(msg.guild, "reaction_roles", reactionRoles);
-
-        return msg.channel.send(isRemoved ? "Removed" : "Could not find the specified reaction role message!")
+        return msg.channel.send("Failed to delete reaction role with id " + id);
     }
 };

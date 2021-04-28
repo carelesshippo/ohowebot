@@ -1,6 +1,7 @@
 import { MessageEmbed, Role } from "discord.js";
 import { CommandoClient, Command, CommandoMessage } from "discord.js-commando";
 import ITicket from "../../ITicket";
+import Ticket from "../../models/Ticket";
 
 module.exports = class NewTicketRole extends Command {
     constructor(bot: CommandoClient) {
@@ -14,10 +15,10 @@ module.exports = class NewTicketRole extends Command {
                 {
                     key: "subject",
                     label: "subject",
-                    prompt: "What is the subject? (Max 10 characters)",
+                    prompt: "What is the subject? (Max 20 characters)",
                     type: "string",
                     validate: (str: string) => {
-                        return str.length <= 10;
+                        return str.length <= 20;
                     },
                     default: "No subject provided",
                 },
@@ -47,14 +48,6 @@ module.exports = class NewTicketRole extends Command {
             }
             return msg.channel.send("Tickets are not enabled on this server.");
         }
-        let tickets: Array<ITicket> = this.client.provider.get(
-            msg.guild,
-            "tickets",
-            null
-        );
-        if (tickets == null) {
-            tickets = await this.client.provider.set(msg.guild, "tickets", []);
-        }
 
         let parent = msg.guild.channels.cache.get(category);
 
@@ -68,17 +61,12 @@ module.exports = class NewTicketRole extends Command {
             ],
         });
 
-        let newTicket: ITicket = {
-            channelId: newChannel.id,
-            creatorId: msg.member.id,
-            originalMessageId: msg.id,
+        let newTicket = await Ticket.create({
+            channelid: newChannel.id,
+            creatorid: msg.member.id,
             subject: subject,
-            id: tickets.length,
-            resolved: false
-        };
-
-        tickets.push(newTicket);
-        this.client.provider.set(msg.guild, "tickets", tickets);
+            resolved: false,
+        });
 
         newChannel.send(
             new MessageEmbed().setTitle(
