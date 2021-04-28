@@ -3,7 +3,7 @@ SERVER="discord@10.0.0.90"
 echo "Deploying"
 ssh $SERVER 'bash -i'  <<-'ENDSSH'
     cd ohowebot
-    git pull
+    git pull -X theirs
     pm2 stop ohowebot
     rm -rf node_modules
     npm install
