@@ -10,7 +10,7 @@
     "buildandstart": "npm run clean && npm run build:ts && npm run start:app",
     "start:app": "node dist/index.js"
   },
-  "author": "abyssal512",
+  "author": "ohowe",
   "license": "MIT",
   "dependencies": {
     "@types/validator": "^13.1.3",
