@@ -1,4 +1,4 @@
-import { Emoji, GuildEmoji, GuildMember, Message, Role } from "discord.js";
+import { Message, Role } from "discord.js";
 import { CommandoClient, Command, CommandoMessage } from "discord.js-commando";
 import ReactionRole from "../../models/ReactionRole";
 

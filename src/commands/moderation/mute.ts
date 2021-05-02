@@ -1,4 +1,4 @@
-import { GuildMember, Role } from "discord.js";
+import { GuildMember } from "discord.js";
 import { CommandoClient, Command, CommandoMessage } from "discord.js-commando";
 
 module.exports = class MuteCommand extends Command {

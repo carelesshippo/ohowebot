@@ -1,6 +1,5 @@
 import { MessageEmbed, Role } from "discord.js";
 import { CommandoClient, Command, CommandoMessage } from "discord.js-commando";
-import ITicket from "../../ITicket";
 import Ticket from "../../models/Ticket";
 
 module.exports = class NewTicketRole extends Command {
